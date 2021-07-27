@@ -1,0 +1,18 @@
+[
+{
+  "modid": "mc_chet_slack",
+  "name": "MC Chet Slack",
+  "description": "Bridges slack and minecraft",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": [
+  "_fef_"
+  ],
+  "credits": "The Forge and FML guys, also FunnyBunnyGG for the tech support",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
