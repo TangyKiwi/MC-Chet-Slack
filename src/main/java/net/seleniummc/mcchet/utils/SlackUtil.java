@@ -1,12 +1,15 @@
 package net.seleniummc.mcchet.utils;
+
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.jetty.SlackAppServer;
-import java.io.IOException;
-import java.io.OutputStream;
+
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+
 public class SlackUtil {
     public static App app = new App();
     public static void main(String[] args) {
@@ -19,7 +22,8 @@ public class SlackUtil {
         SlackAppServer server = new SlackAppServer(app);
         server.start();
     }
-    public static void sendMessage(String msg, String channel, String iconURL, String username) throws IOException {
+    public static void sendMessage(String msg, String iconURL, String username) throws IOException {
+        String channel = getSlackChannel();
         System.out.println("Slecc Chet");
         URL url = new URL("https://slack.com/api/chat.postMessage");
         URLConnection con = url.openConnection();
@@ -36,11 +40,25 @@ public class SlackUtil {
         int length = out.length;
         http.setFixedLengthStreamingMode(length);
         http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-        http.setRequestProperty("Authorization", "Bearer " + System.getenv("SLACK_BOT_TOKEN"));
+        http.setRequestProperty("Authorization", "Bearer " + "xoxb-2210535565-2306134277862-f5RvJ9mj1SAwpR9J5rFpM5w6");
         http.connect();
         try (OutputStream os = http.getOutputStream()) {
             os.write(out);
         }
-        System.out.println(http.getResponseMessage());
+        InputStream inputStream = http.getInputStream();
+        String text = new BufferedReader(
+                new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                .lines()
+                .collect(Collectors.joining("\n"));
+        System.out.println(text);
+    }
+
+    public static String getSlackChannel() {
+        // TODO: get this from the config
+        return "C02AAFY8872";
+    }
+
+    public static String getPlayerAvatarLink(String uuid) {
+        return "http://cravatar.eu/avatar/" + uuid;
     }
 }

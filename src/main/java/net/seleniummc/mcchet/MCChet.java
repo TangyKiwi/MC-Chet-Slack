@@ -7,7 +7,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.seleniummc.mcchet.events.PlayerChatEvent;
+import net.seleniummc.mcchet.events.PlayerChatListener;
+import net.seleniummc.mcchet.events.PlayerIOListener;
 import net.seleniummc.mcchet.utils.SlackUtil;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +52,9 @@ public class MCChet
             config.save();
         }
 
-        MinecraftForge.EVENT_BUS.register(new PlayerChatEvent(this));
+        MinecraftForge.EVENT_BUS.register(new PlayerChatListener(this));
+        MinecraftForge.EVENT_BUS.register(new PlayerIOListener(this));
+        slackUtil.sendMessage("Mod initialized","https://emoji.slack-edge.com/T0266FRGM/snakecat/41d90e5cd1fbf2ce.png", "Minecraft Chat(Modded)");
 
         new Thread(new Runnable() {
             @Override public void run() {
@@ -63,6 +66,7 @@ public class MCChet
             }
         }).start();
     }
+
 
     public static String getString(String category, String key) {
         config = new Configuration(new File(file));
