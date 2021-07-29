@@ -1,57 +1,46 @@
 package net.seleniummc.mcchet.utils;
-
-import com.slack.api.Slack;
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.jetty.SlackAppServer;
-import com.slack.api.methods.MethodsClient;
-import com.slack.api.methods.request.chat.ChatPostMessageRequest;
-import com.slack.api.methods.response.chat.ChatPostMessageResponse;
-
-
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 public class SlackUtil {
     public static App app = new App();
-    public static Slack slack;
-
-    public static void main(String[] args){
+    public static void main(String[] args) {
         return;
     }
-
     public static void initSlack() throws Exception {
-        System.out.println("slecc init");
-        slack = Slack.getInstance();
-
         app.command("/list", (req, ctx) -> {
             return ctx.ack("a");
         });
-
-
-
-
         SlackAppServer server = new SlackAppServer(app);
         server.start();
     }
-
-    public static void sendMessage(String msg, String channel) {
+    public static void sendMessage(String msg, String channel, String iconURL, String username) throws IOException {
         System.out.println("Slecc Chet");
-        try {
-            System.out.println("Trying Slecc Chet");
-//            app.client().chatPostMessage(r ->
-//                    r
-//                            .channel(channel)
-//                            .text(msg));
-            String token = System.getenv("SLACK_TOKEN");
-            MethodsClient  methodsClient = slack.methods(token);
-            ChatPostMessageRequest request = ChatPostMessageRequest.builder()
-                    .channel("CD1JSG9UK")
-                    .text(msg)
-                    .build();
-
-            ChatPostMessageResponse response = methodsClient.chatPostMessage(request);
-
-        } catch (Exception e) {
-            System.out.println("Slecc Chet bad");
-            e.printStackTrace();
+        URL url = new URL("https://slack.com/api/chat.postMessage");
+        URLConnection con = url.openConnection();
+        HttpURLConnection http = (HttpURLConnection) con;
+        http.setRequestMethod("POST");
+        http.setDoOutput(true);
+        String body = "{" +
+                "\"channel\": \"" + channel + "\"," +
+                "\"text\": \"" + msg + "\"," +
+                "\"icon_url\": \"" + iconURL + "\"," +
+                "\"username\": \"" + username + "\"" +
+                "}";
+        byte[] out = body.getBytes(StandardCharsets.UTF_8);
+        int length = out.length;
+        http.setFixedLengthStreamingMode(length);
+        http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+        http.setRequestProperty("Authorization", "Bearer " + System.getenv("SLACK_BOT_TOKEN"));
+        http.connect();
+        try (OutputStream os = http.getOutputStream()) {
+            os.write(out);
         }
-        //app.client().chatPostMessage(channel, msg);
+        System.out.println(http.getResponseMessage());
     }
 }
