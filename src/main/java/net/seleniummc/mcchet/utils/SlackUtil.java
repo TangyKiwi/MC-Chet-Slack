@@ -10,7 +10,7 @@ import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
 public class SlackUtil {
     public static App app = new App();
-    public static MethodsClient methodsClient;
+    public static Slack slack;
 
     public static void main(String[] args){
         return;
@@ -18,13 +18,12 @@ public class SlackUtil {
 
     public static void initSlack() throws Exception {
         System.out.println("slecc init");
-        Slack slack = Slack.getInstance();
+        slack = Slack.getInstance();
 
         app.command("/list", (req, ctx) -> {
             return ctx.ack("a");
         });
-        String token = System.getenv("SLACK_TOKEN");
-        methodsClient = slack.methods(token);
+
 
 
 
@@ -40,8 +39,10 @@ public class SlackUtil {
 //                    r
 //                            .channel(channel)
 //                            .text(msg));
+            String token = System.getenv("SLACK_TOKEN");
+            MethodsClient  methodsClient = slack.methods(token);
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
-                    .channel("#minecraft")
+                    .channel("CD1JSG9UK")
                     .text(msg)
                     .build();
 
