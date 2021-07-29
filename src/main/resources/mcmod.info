@@ -3,8 +3,8 @@
   "modid": "mc_chet_slack",
   "name": "MC Chet Slack",
   "description": "Bridges slack and minecraft",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
+  "version": "Alpha 1.0",
+  "mcversion": "[1.12.2]",
   "url": "",
   "updateUrl": "",
   "authorList": [

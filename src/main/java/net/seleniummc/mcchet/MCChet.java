@@ -1,11 +1,13 @@
 package net.seleniummc.mcchet;
 
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.seleniummc.mcchet.events.PlayerChatEvent;
 import net.seleniummc.mcchet.utils.SlackUtil;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +22,7 @@ public class MCChet
     private static String file = "config/MCChet.cfg";
     public static final String MODID = "mc_chet_slack";
     public static final String NAME = "MC Chet Slack";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "Alpha 1.0";
 
     private static Logger logger;
     public static SlackUtil slackUtil;
@@ -40,6 +42,7 @@ public class MCChet
     @EventHandler
     public void init(FMLInitializationEvent event) throws Exception {
         config = new Configuration(new File(file));
+        slackUtil = new SlackUtil();
         try {
             config.load();
         } catch (Exception e) {
@@ -48,8 +51,17 @@ public class MCChet
             config.save();
         }
 
-        slackUtil = new SlackUtil();
-        slackUtil.initSlack();
+        MinecraftForge.EVENT_BUS.register(new PlayerChatEvent(this));
+
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try {
+                    slackUtil.initSlack();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     public static String getString(String category, String key) {

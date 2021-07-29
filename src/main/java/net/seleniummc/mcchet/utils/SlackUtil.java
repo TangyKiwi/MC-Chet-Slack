@@ -14,7 +14,7 @@ public class SlackUtil {
     }
 
     public static void initSlack() throws Exception {
-        
+        System.out.println("slecc init");
         app.command("/list", (req, ctx) -> {
             return ctx.ack("a");
         });
@@ -23,11 +23,12 @@ public class SlackUtil {
         server.start();
     }
 
-    public boolean sendMessage(String msg, String channel) throws SlackApiException, IOException {
-        app.client().chatPostMessage(r ->
-                r
-                        .channel(channel)
-                        .text(msg));
-        return true;
+    public static void sendMessage(String msg, String channel) throws SlackApiException, IOException {
+        System.out.println("Slecc Chet");
+//        app.client().chatPostMessage(r ->
+//                r
+//                        .channel(channel)
+//                        .text(msg));
+        app.client().chatPostMessage(channel, msg);
     }
 }
