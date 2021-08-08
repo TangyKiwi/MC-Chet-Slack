@@ -28,11 +28,9 @@ public class MCChet
     private static Logger logger;
     public static SlackUtil slackUtil;
 
-//    public static void main(String[] args) throws IOException, SlackApiException, Exception {
-//        slackUtil = new SlackUtil();
-//        slackUtil.initSlack();
-//
-//    }
+    public static void main(String[] args)  {
+        return;
+    }
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
