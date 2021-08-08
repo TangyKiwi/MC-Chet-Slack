@@ -16,7 +16,7 @@ public class PlayerChatListener {
         System.out.println("chet");
         try {
             System.out.println("try to run funny code");
-            mcchet.slackUtil.sendMessage(e.getMessage(), "http://cravatar.eu/avatar/" + e.getPlayer().getUniqueID(), e.getPlayer().getDisplayNameString());
+            mcchet.slackUtil.sendMessage("CHET » " + e.getMessage(), "http://cravatar.eu/avatar/" + e.getPlayer().getUniqueID(), e.getPlayer().getDisplayNameString());
             System.out.println("funnycode ran");
         } catch (Exception exception) {
             System.out.println("ono my code broke and a exception has ben cat");

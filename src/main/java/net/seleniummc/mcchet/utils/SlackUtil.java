@@ -2,16 +2,21 @@ package net.seleniummc.mcchet.utils;
 
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.jetty.SlackAppServer;
+import com.slack.api.model.event.MessageEvent;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SlackUtil {
     public static App app = new App();
+    private static String notificationChannelId = getSlackChannel();
+
     public static void main(String[] args) {
         return;
     }
@@ -19,9 +24,44 @@ public class SlackUtil {
         app.command("/list", (req, ctx) -> {
             return ctx.ack("a");
         });
+        Pattern sdk = Pattern.compile(".*");
+        app.message(sdk, (payload, ctx) -> {
+            MessageEvent event = payload.getEvent();
+            String text = event.getText();
+            String channelId = event.getChannel();
+            String mainChannel = getSlackChannel();
+            if(channelId != mainChannel){
+                return ctx.ack();
+            }
+            String userId = event.getUser();
+            @SuppressWarnings("unchecked")
+            Map<String, Object> result = (Map<String, Object>) ctx.client().usersProfileGet(r ->
+                    r
+                            .token(ctx.getBotToken())
+                            .user(userId)
+            );
+            @SuppressWarnings("unchecked")
+            Map<String, Object> profile = (Map<String, Object>) result.get("profile");
+            String displayName = (String) profile.get("display_name");
+            // do ur stuff here alex. `text` and `displayName` is the variable u need
+            System.out.println(text);
+            System.out.println(displayName);
+            return ctx.ack();
+        });
         SlackAppServer server = new SlackAppServer(app);
         server.start();
     }
+
+    public static String getSlackChannel() {
+        // TODO: get this from config/MCChet.cfg
+        return "C02AAFY8872";
+    }
+
+    public static String getBotToken() {
+        // TODO: get this from config/MCChet.cfg
+        return "nothing";
+    }
+
     public static void sendMessage(String msg, String iconURL, String username) throws IOException {
         String channel = getSlackChannel();
         System.out.println("Slecc Chet");
@@ -40,7 +80,7 @@ public class SlackUtil {
         int length = out.length;
         http.setFixedLengthStreamingMode(length);
         http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-        http.setRequestProperty("Authorization", "Bearer " + "xoxb-2210535565-2306134277862-f5RvJ9mj1SAwpR9J5rFpM5w6");
+        http.setRequestProperty("Authorization", "Bearer " + getBotToken());
         http.connect();
         try (OutputStream os = http.getOutputStream()) {
             os.write(out);
@@ -53,10 +93,7 @@ public class SlackUtil {
         System.out.println(text);
     }
 
-    public static String getSlackChannel() {
-        // TODO: get this from the config
-        return "C02AAFY8872";
-    }
+
 
     public static String getPlayerAvatarLink(String uuid) {
         return "http://cravatar.eu/avatar/" + uuid;
