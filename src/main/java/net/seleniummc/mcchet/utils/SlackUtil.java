@@ -9,13 +9,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SlackUtil {
     public static App app = new App();
     private static String notificationChannelId = getSlackChannel();
+    Properties cfg = new Properties();
+    String cfg_file = "path/to/config/MCChet.cfg";
 
     public static void main(String[] args) {
         return;
@@ -25,27 +27,35 @@ public class SlackUtil {
             return ctx.ack("a");
         });
 
+        try (FileInputStream fis = new FileInputStream(fileName)) {
+            cfg.load(fis);
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found :/");
+        } catch (IOException ex) {
+            System.out.println("Can't read :/");
+        }
+
         Pattern sdk = Pattern.compile(".*");
         app.message(sdk, (payload, ctx) -> {
-          MessageEvent event = payload.getEvent();
-          String text = event.getText();
-          String channelId = event.getChannel();
-          String mainChannel = "C02AAFY8872";
-          if(!channelId.equals(mainChannel)){
-            return ctx.ack();
-          }
-          String userId = event.getUser();
-          UsersProfileGetResponse result =  ctx.client().usersProfileGet(r ->
-                  r
-                          .token(ctx.getBotToken())
-                          .user(userId)
-          );
-          String displayName = result.getProfile().getDisplayName();
+            MessageEvent event = payload.getEvent();
+            String text = event.getText();
+            String channelId = event.getChannel();
+            String mainChannel = "C02AAFY8872";
+            if(!channelId.equals(mainChannel)){
+                return ctx.ack();
+            }
+            String userId = event.getUser();
+            UsersProfileGetResponse result =  ctx.client().usersProfileGet(r ->
+                    r
+                            .token(ctx.getBotToken())
+                            .user(userId)
+            );
+            String displayName = result.getProfile().getDisplayName();
 
-          // the variables u need are `text` and `displayName`. send them to minecraft here
-          System.out.println(text);
-          System.out.println(displayName);
-          return ctx.ack();
+            // the variables u need are `text` and `displayName`. send them to minecraft here
+            System.out.println(text);
+            System.out.println(displayName);
+            return ctx.ack();
         });
 
         SlackAppServer server = new SlackAppServer(app);
@@ -54,12 +64,14 @@ public class SlackUtil {
 
     public static String getSlackChannel() {
         // TODO: get this from config/MCChet.cfg
-        return "C02AAFY8872";
+        //return "C02AAFY8872";
+        return cfg.getProperty("chet.channel"); //or wtv it's called
     }
 
     public static String getBotToken() {
         // TODO: get this from config/MCChet.cfg
-        return "nothing";
+        //return "nothing";
+        return cfg.getProperty("chet.token)"); //or wtv it's called
     }
 
     public static void sendMessage(String msg, String iconURL, String username) throws IOException {
