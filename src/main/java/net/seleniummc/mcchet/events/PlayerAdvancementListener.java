@@ -11,7 +11,7 @@ public class PlayerAdvancementListener {
     private static MCChet mcchet;
 
     public PlayerAdvancementListener(MCChet mcchet) {
-        mcchet = mcchet;
+        this.mcchet = mcchet;
     }
 
     @SubscribeEvent
