@@ -24,30 +24,30 @@ public class SlackUtil {
         app.command("/list", (req, ctx) -> {
             return ctx.ack("a");
         });
+
         Pattern sdk = Pattern.compile(".*");
         app.message(sdk, (payload, ctx) -> {
-            MessageEvent event = payload.getEvent();
-            String text = event.getText();
-            String channelId = event.getChannel();
-            String mainChannel = getSlackChannel();
-            if(channelId != mainChannel){
-                return ctx.ack();
-            }
-            String userId = event.getUser();
-            @SuppressWarnings("unchecked")
-            Map<String, Object> result = (Map<String, Object>) ctx.client().usersProfileGet(r ->
-                    r
-                            .token(ctx.getBotToken())
-                            .user(userId)
-            );
-            @SuppressWarnings("unchecked")
-            Map<String, Object> profile = (Map<String, Object>) result.get("profile");
-            String displayName = (String) profile.get("display_name");
-            // do ur stuff here alex. `text` and `displayName` is the variable u need
-            System.out.println(text);
-            System.out.println(displayName);
+          MessageEvent event = payload.getEvent();
+          String text = event.getText();
+          String channelId = event.getChannel();
+          String mainChannel = "C02AAFY8872";
+          if(!channelId.equals(mainChannel)){
             return ctx.ack();
+          }
+          String userId = event.getUser();
+          UsersProfileGetResponse result =  ctx.client().usersProfileGet(r ->
+                  r
+                          .token(ctx.getBotToken())
+                          .user(userId)
+          );
+          String displayName = result.getProfile().getDisplayName();
+
+          // the variables u need are `text` and `displayName`. send them to minecraft here
+          System.out.println(text);
+          System.out.println(displayName);
+          return ctx.ack();
         });
+
         SlackAppServer server = new SlackAppServer(app);
         server.start();
     }
