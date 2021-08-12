@@ -40,7 +40,7 @@ public class SlackUtil {
             MessageEvent event = payload.getEvent();
             String text = event.getText();
             String channelId = event.getChannel();
-            String mainChannel = "C02AAFY8872";
+            String mainChannel = getSlackChannel(); // kinda redundant but ya
             if(!channelId.equals(mainChannel)){
                 return ctx.ack();
             }
